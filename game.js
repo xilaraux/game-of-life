@@ -3,11 +3,12 @@ const CELL_WIDTH = 20;
 class Game {
   constructor(canvas, initialState) {
     this.gameAnimationFrame = null;
-    initialState ? this.cells = initialState : this.updateCells();
     this.ctx = canvas.getContext('2d');
 
     this.ctx.canvas.width = 500; // 1920;
     this.ctx.canvas.height = 500; // 1080;
+
+    initialState ? this.cells = initialState : this.updateCells();
   }
 
   run() {
@@ -68,9 +69,11 @@ class Game {
   }
 
   updateCells() {
+    const { x, y } = this.amountOfCells();
+
     this.cells = Array.from(
-      { length: 500 }, () => Array.from(
-        { length: 500 }, () => Math.floor(Math.random() * 2) + 0
+      { length: x }, () => Array.from(
+        { length: y }, () => Math.floor(Math.random() * 2) + 0
       ));
   }
 
@@ -82,24 +85,30 @@ class Game {
 
     ctx.fillStyle = 'rgba(211, 211, 211, 0.9)';
 
-    for (let i = 0; i < ctx.canvas.width; i += CELL_WIDTH) {
-      for (let j = 0; j < ctx.canvas.height; j += CELL_WIDTH) {
-        if (this.cells[i][j]) {
-          ctx.fillRect(BORDER_WIDTH + i, BORDER_WIDTH + j, cellSpace, cellSpace);
-        }
+    this.traverseBoard((i, j) => {
+      if (this.cells[i][j]) {
+        ctx.fillRect(BORDER_WIDTH + i * CELL_WIDTH, BORDER_WIDTH + j * CELL_WIDTH, cellSpace, cellSpace);
       }
-    }
+    });
   }
 
   clearCells() {
     const ctx = this.ctx;
     ctx.fillStyle = 'white';
 
-    for (let i = 0; i < ctx.canvas.width; i += CELL_WIDTH) {
-      for (let j = 0; j < ctx.canvas.height; j += CELL_WIDTH) {
-        if (this.cells[i][j]) {
-          ctx.fillRect(2 + i, 2 + j, 18, 18);
-        }
+    this.traverseBoard((i, j) => {
+      if (this.cells[i][j]) {
+        ctx.fillRect(2 + i * CELL_WIDTH, 2 + j * CELL_WIDTH, 18, 18);
+      }
+    });
+  }
+
+  traverseBoard(callback) {
+    const { x, y } = this.amountOfCells();
+
+    for (let i = 0; i < x; i++) {
+      for (let j = 0; j < y; j++) {
+        callback(i, j);
       }
     }
   }
