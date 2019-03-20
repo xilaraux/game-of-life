@@ -3,7 +3,7 @@ const CELL_WIDTH = 20;
 class Game {
   constructor(canvas, initialState) {
     this.gameAnimationFrame = null;
-    initialState ? this.field = initialState : this.updateCells();
+    initialState ? this.cells = initialState : this.updateCells();
     this.ctx = canvas.getContext('2d');
 
     this.ctx.canvas.width = 500; // 1920;
@@ -44,12 +44,9 @@ class Game {
     ctx.lineCap = 'butt';
     ctx.strokeStyle = 'rgba(211, 211, 211, 0.9)';
 
-    const verticalLines = ctx.canvas.width / CELL_WIDTH;
-    const horizontalLines = ctx.canvas.height / CELL_WIDTH;
-
-    // Fill board with default color
-    // ctx.fillStyle = 'rgba(211, 211, 211, 0.4)';
-    // ctx.fillRect(0, 0, ctx.canvas.height, ctx.canvas.width);
+    const boardParams = this.amountOfCells();
+    const verticalLines = boardParams.x;
+    const horizontalLines = boardParams.y;
 
     for (let i = 0; i < verticalLines; i++) {
       ctx.beginPath();
@@ -64,10 +61,14 @@ class Game {
       ctx.lineTo(ctx.canvas.width, 1 + i * CELL_WIDTH);
       ctx.stroke();
     }
+
+    // Fill board with default color
+    // ctx.fillStyle = 'rgba(211, 211, 211, 0.4)';
+    // ctx.fillRect(0, 0, ctx.canvas.height, ctx.canvas.width);
   }
 
   updateCells() {
-    this.field = Array.from(
+    this.cells = Array.from(
       { length: 500 }, () => Array.from(
         { length: 500 }, () => Math.floor(Math.random() * 2) + 0
       ));
@@ -83,7 +84,7 @@ class Game {
 
     for (let i = 0; i < ctx.canvas.width; i += CELL_WIDTH) {
       for (let j = 0; j < ctx.canvas.height; j += CELL_WIDTH) {
-        if (this.field[i][j]) {
+        if (this.cells[i][j]) {
           ctx.fillRect(BORDER_WIDTH + i, BORDER_WIDTH + j, cellSpace, cellSpace);
         }
       }
@@ -96,11 +97,18 @@ class Game {
 
     for (let i = 0; i < ctx.canvas.width; i += CELL_WIDTH) {
       for (let j = 0; j < ctx.canvas.height; j += CELL_WIDTH) {
-        if (this.field[i][j]) {
+        if (this.cells[i][j]) {
           ctx.fillRect(2 + i, 2 + j, 18, 18);
         }
       }
     }
+  }
+
+  amountOfCells() {
+    const x = this.ctx.canvas.width / CELL_WIDTH;
+    const y = this.ctx.canvas.height / CELL_WIDTH;
+
+    return { x, y };
   }
 }
 
