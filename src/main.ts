@@ -1,6 +1,6 @@
 // https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial
 // https://developer.mozilla.org/ru/docs/DOM/window.requestAnimationFrame
-import Game from './Game';
+import Game from './units/Game';
 import {configureContext} from './utils/configureContext';
 
 const board = document.getElementById('board') as HTMLCanvasElement;

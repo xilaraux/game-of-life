@@ -131,7 +131,6 @@ function getState(i, j): CellState {
     // return Math.floor(Math.random() * 2) as CellState;
 }
 
-export interface IWorld {
+export interface IWorld extends IDrawable {
     getNeighbours(coords: Coords): ICell[];
-    draw(ctx: CanvasRenderingContext2D): void;
 }
