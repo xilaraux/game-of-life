@@ -82,6 +82,7 @@ export default class Cell implements ICell {
 
 export interface ICell extends IDrawable {
     isAlive(): boolean;
+    // TODO: Get away from using board as parameter and implement IChangeable interface.
     next(board: ICell[][]): void;
 }
 
