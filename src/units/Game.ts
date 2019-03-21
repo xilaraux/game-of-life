@@ -20,6 +20,7 @@ export default class Game implements IGame {
         const runner = (timestamp) => {
             if (timestamp - start > 600) {
                 this.world.draw(this.ctx);
+                this.world.next();
                 start = timestamp;
             }
 

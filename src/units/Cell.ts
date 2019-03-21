@@ -1,5 +1,3 @@
-import {IWorld} from "./World";
-
 const BORDER_WIDTH = 2;
 export const CELL_WIDTH = 20;
 export const CELL_HEIGHT = 20;
@@ -11,13 +9,15 @@ export default class Cell implements ICell {
     private state: CellState = 0;
     private nextState: CellState = 0;
     private readonly coords: Coords;
+    private readonly neighbours: Coords[];
 
     constructor(params: ICellParams) {
         this.state = params.state;
         this.coords = params.coords;
+        this.neighbours = params.neighbours;
     }
 
-    public draw(ctx: CanvasRenderingContext2D, world: IWorld): void {
+    public draw(ctx: CanvasRenderingContext2D): void {
         // TODO: Add prev state checking in order to optimize rendering
         if (this.isAlive()) {
             ctx.fillStyle = 'rgba(211, 211, 211, 0.9)';
@@ -31,21 +31,21 @@ export default class Cell implements ICell {
             CELL_FREE_WIDTH,
             CELL_FREE_HEIGHT
         );
-
-        this.think(world);
-        this.tick();
     }
 
-    public think(world: IWorld): void {
+    public next(board: ICell[][]): void {
         // TODO: Add checking only for those whose environment have been changed
-        const neighbours: ICell[] = world.getNeighbours(this.coords);
-        const liveNeighbours = neighbours.filter((cell) => cell.isAlive()).length;
+        const liveNeighbours = this.neighbours
+            .map(({x, y}: Coords) => board[x][y])
+            .filter((cell) => cell.isAlive()).length;
 
         if (this.isAlive()) {
             this.thinkLive(liveNeighbours);
         } else {
             this.thinkDead(liveNeighbours);
         }
+
+        this.tick();
     }
 
     public isAlive(): boolean {
@@ -78,13 +78,13 @@ export default class Cell implements ICell {
     }
 }
 
-export interface ICell {
+export interface ICell extends IDrawable {
     isAlive(): boolean;
-    // think(world: World): void; // planning next tick
-    draw(ctx: CanvasRenderingContext2D, world: IWorld): void;
+    next(board: ICell[][]): void;
 }
 
 interface ICellParams {
     coords: Coords;
     state: CellState;
+    neighbours: Coords[],
 }
