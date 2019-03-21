@@ -7,7 +7,7 @@ const CELL_FREE_HEIGHT = CELL_HEIGHT - BORDER_WIDTH;
 
 export default class Cell implements ICell {
     private state: CellState = 0;
-    private nextState: CellState = 0;
+    private prevState: CellState = 0;
     private readonly coords: Coords;
     private readonly neighbours: Coords[];
 
@@ -18,7 +18,10 @@ export default class Cell implements ICell {
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
-        // TODO: Add prev state checking in order to optimize rendering
+        if (this.state === this.prevState) {
+            return; // nothing has changed
+        }
+
         if (this.isAlive()) {
             ctx.fillStyle = 'rgba(211, 211, 211, 0.9)';
         } else {
@@ -39,13 +42,13 @@ export default class Cell implements ICell {
             .map(({x, y}: Coords) => board[x][y])
             .filter((cell) => cell.isAlive()).length;
 
+        this.memorizePrevState();
+
         if (this.isAlive()) {
             this.thinkLive(liveNeighbours);
         } else {
             this.thinkDead(liveNeighbours);
         }
-
-        this.tick();
     }
 
     public isAlive(): boolean {
@@ -54,27 +57,26 @@ export default class Cell implements ICell {
 
     private thinkLive(liveNeighbours: number): void {
         if (liveNeighbours < 2) {
-            this.nextState = 0;
+            this.state = 0;
         }
 
         if (liveNeighbours === 2 || liveNeighbours === 3) {
-            this.nextState = 1;
+            this.state = 1;
         }
 
         if (liveNeighbours > 3) {
-            this.nextState = 0;
+            this.state = 0;
         }
     }
 
     private thinkDead(liveNeighbours: number): void {
         if (liveNeighbours === 3) {
-            this.nextState = 1;
+            this.state = 1;
         }
     }
 
-    private tick(): void {
-        this.state = this.nextState;
-        this.nextState = 0;
+    private memorizePrevState(): void {
+        this.prevState = this.state;
     }
 }
 
