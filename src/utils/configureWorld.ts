@@ -29,5 +29,7 @@ export const configureWorld = (): CellState[][] => {
     ];
 
     // Random version
-    // return Math.floor(Math.random() * 2) as CellState;
+    /*return Array.from({length: 25}, () => {
+        return Array.from({length: 25}, ()=>Math.floor(Math.random() * 2) as CellState);
+    });*/
 };
