@@ -19,6 +19,7 @@ export default class Game implements IGame {
         let start = 0;
         const runner = (timestamp) => {
             if (timestamp - start > 600) {
+                // TODO: Stop the game when world become balanced
                 this.world.draw(this.ctx);
                 this.world.next();
                 start = timestamp;
