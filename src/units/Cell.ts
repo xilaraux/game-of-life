@@ -22,7 +22,7 @@ export default class Cell implements ICell {
             return; // nothing has changed
         }
 
-        if (this.isAlive()) {
+        if (this.state === 1) {
             ctx.fillStyle = 'rgba(211, 211, 211, 0.9)';
         } else {
             ctx.fillStyle = 'white';
@@ -34,17 +34,17 @@ export default class Cell implements ICell {
             CELL_FREE_WIDTH,
             CELL_FREE_HEIGHT
         );
+
+        this.memorizePrevState();
     }
 
     public next(board: ICell[][]): void {
         // TODO: Add checking only for those whose environment have been changed
         const liveNeighbours = this.neighbours
-            .map(({x, y}: Coords) => board[x][y])
+            .map(({x, y}: Coords) => board[y][x])
             .filter((cell) => cell.isAlive()).length;
 
-        this.memorizePrevState();
-
-        if (this.isAlive()) {
+        if (this.state === 1) {
             this.thinkLive(liveNeighbours);
         } else {
             this.thinkDead(liveNeighbours);
@@ -52,7 +52,7 @@ export default class Cell implements ICell {
     }
 
     public isAlive(): boolean {
-        return this.state === 1;
+        return this.prevState === 1;
     }
 
     private thinkLive(liveNeighbours: number): void {
