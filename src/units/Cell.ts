@@ -7,22 +7,22 @@ const CELL_FREE_HEIGHT = CELL_HEIGHT - BORDER_WIDTH;
 
 export default class Cell implements ICell {
     private state: CellState = 0;
-    private prevState: CellState = 0;
+    private nextState: CellState = 0;
     private readonly coords: Coords;
     private readonly neighbours: Coords[];
 
     constructor(params: ICellParams) {
-        this.state = params.state;
         this.coords = params.coords;
+        this.nextState = params.state;
         this.neighbours = params.neighbours;
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
-        if (this.state === this.prevState) {
+        if (this.nextState === this.state) {
             return; // nothing has changed
         }
 
-        if (this.state === 1) {
+        if (this.nextState === 1) {
             ctx.fillStyle = 'rgba(211, 211, 211, 0.9)';
         } else {
             ctx.fillStyle = 'white';
@@ -35,7 +35,7 @@ export default class Cell implements ICell {
             CELL_FREE_HEIGHT
         );
 
-        this.memorizePrevState();
+        this.memorizeState();
     }
 
     public next(board: ICell[][]): void {
@@ -44,39 +44,47 @@ export default class Cell implements ICell {
             .map(({x, y}: Coords) => board[y][x])
             .filter((cell) => cell.isAlive()).length;
 
-        if (this.state === 1) {
-            this.thinkLive(liveNeighbours);
+        if (this.isAlive()) {
+            this.liveCellThink(liveNeighbours);
         } else {
-            this.thinkDead(liveNeighbours);
+            this.deadCellThink(liveNeighbours);
         }
     }
 
     public isAlive(): boolean {
-        return this.prevState === 1;
+        return this.state === 1;
     }
 
-    private thinkLive(liveNeighbours: number): void {
+    private memorizeState(): void {
+        this.state = this.nextState;
+    }
+
+    private liveCellThink(liveNeighbours: number): void {
         if (liveNeighbours < 2) {
-            this.state = 0;
+            this.becomeDead();
         }
 
         if (liveNeighbours === 2 || liveNeighbours === 3) {
-            this.state = 1;
+            this.becomeAlive();
         }
 
         if (liveNeighbours > 3) {
-            this.state = 0;
+            this.becomeDead();
         }
     }
 
-    private thinkDead(liveNeighbours: number): void {
+    private deadCellThink(liveNeighbours: number): void {
         if (liveNeighbours === 3) {
-            this.state = 1;
+            this.becomeAlive();
         }
     }
 
-    private memorizePrevState(): void {
-        this.prevState = this.state;
+    private becomeDead(): void {
+        this.nextState = 0;
+    }
+
+    private becomeAlive(): void {
+        this.nextState = 1;
     }
 }
 
