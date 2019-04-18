@@ -7,13 +7,13 @@ export default class Game implements IGame {
 
     private readonly world: IWorld;
 
-    constructor(context) {
+    constructor(context, worldSeed: CellState[][]) {
         this.ctx = context;
         this.animationFrame = null;
-        this.world = new World(this.ctx.canvas.width, this.ctx.canvas.height);
+        this.world = new World(worldSeed);
     }
 
-    public run(): void {
+    public start(): void {
         this.drawGrid();
 
         let start = 0;
@@ -44,8 +44,8 @@ export default class Game implements IGame {
         ctx.lineCap = 'butt';
         ctx.strokeStyle = 'rgba(211, 211, 211, 0.9)';
 
-        const verticalLines = this.ctx.canvas.width / CELL_WIDTH;
-        const horizontalLines = this.ctx.canvas.height / CELL_HEIGHT;
+        const verticalLines = Math.floor(this.ctx.canvas.width / CELL_WIDTH);
+        const horizontalLines = Math.floor(this.ctx.canvas.height / CELL_HEIGHT);
 
         for (let i = 0; i < verticalLines; i++) {
             ctx.beginPath();
@@ -68,6 +68,6 @@ export default class Game implements IGame {
 }
 
 interface IGame {
-    run(): void;
+    start(): void;
     stop(): void;
 }

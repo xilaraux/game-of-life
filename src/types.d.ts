@@ -10,3 +10,8 @@ interface IDrawable {
 interface IChangeable {
     next(): void;
 }
+
+interface ISize {
+    width: number;
+    height: number;
+}

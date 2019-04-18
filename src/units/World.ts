@@ -1,17 +1,14 @@
-import {configureWorld} from "../utils/configureWorld";
-import Cell, {CELL_HEIGHT, CELL_WIDTH, ICell} from "./Cell";
+import Cell, {ICell} from "./Cell";
 
 export default class World implements IWorld {
     private readonly width: number;
     private readonly height: number;
     private readonly content: ICell[][];
 
-    constructor(width: number, height: number) {
-        this.width = width / CELL_WIDTH;
-        this.height = height / CELL_HEIGHT;
-        this.content = [];
-
-        this.fillContent();
+    constructor(seed: CellState[][]) {
+        this.height = seed.length;
+        this.width = seed[0].length;
+        this.content = this.fillContent(seed);
     }
 
     public draw(ctx: CanvasRenderingContext2D): void {
@@ -107,14 +104,16 @@ export default class World implements IWorld {
         return neighbours;
     }
 
-    private fillContent(): void {
-        const worldBoard = configureWorld();
+    private fillContent(seed: CellState[][]): ICell[][] {
+        const height = seed.length;
+        const width = seed[0].length;
+        const content: ICell[][] = [];
 
-        for (let y = 0; y < this.height; y++) {
+        for (let y = 0; y < height; y++) {
             let row: ICell[] = [];
 
-            for (let x = 0; x < this.width; x++) {
-                const state = worldBoard[y][x];
+            for (let x = 0; x < width; x++) {
+                const state = seed[y][x];
                 const cellParams = {
                     state,
                     coords: {x, y},
@@ -124,8 +123,10 @@ export default class World implements IWorld {
                 row.push(new Cell(cellParams));
             }
 
-            this.content.push(row);
+            content.push(row);
         }
+
+        return content;
     }
 }
 
