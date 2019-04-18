@@ -4,13 +4,15 @@ import {CELL_HEIGHT, CELL_WIDTH} from "./Cell";
 export default class Game implements IGame {
     private animationFrame: null | number = null;
     private readonly ctx: CanvasRenderingContext2D;
+    private readonly drawConfig: IDrawConfig;
 
     private readonly world: IWorld;
 
-    constructor(context, worldSeed: CellState[][]) {
-        this.ctx = context;
+    constructor(config: IGameConfig) {
+        this.ctx = config.context;
         this.animationFrame = null;
-        this.world = new World(worldSeed);
+        this.world = new World(config.worldSeed);
+        this.drawConfig = config.drawConfig;
     }
 
     public start(): void {
@@ -39,10 +41,11 @@ export default class Game implements IGame {
 
     private drawGrid() {
         const ctx = this.ctx;
+        const drawConfig = this.drawConfig;
 
-        ctx.lineWidth = 1;
-        ctx.lineCap = 'butt';
-        ctx.strokeStyle = 'rgba(211, 211, 211, 0.9)';
+        ctx.lineCap = drawConfig.cap;
+        ctx.lineWidth = drawConfig.width;
+        ctx.strokeStyle = drawConfig.color;
 
         const verticalLines = Math.floor(this.ctx.canvas.width / CELL_WIDTH);
         const horizontalLines = Math.floor(this.ctx.canvas.height / CELL_HEIGHT);
@@ -70,4 +73,16 @@ export default class Game implements IGame {
 interface IGame {
     start(): void;
     stop(): void;
+}
+
+interface IGameConfig {
+    worldSeed: CellState[][],
+    context: CanvasRenderingContext2D,
+    drawConfig: IDrawConfig;
+}
+
+interface IDrawConfig {
+    color: string;
+    width: number;
+    cap: CanvasLineCap;
 }
