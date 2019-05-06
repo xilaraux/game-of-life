@@ -3,10 +3,10 @@ import {CELL_HEIGHT, CELL_WIDTH} from "./Cell";
 
 export default class Game implements IGame {
     private animationFrame: null | number = null;
-    private readonly ctx: CanvasRenderingContext2D;
+    private ctx: CanvasRenderingContext2D;
     private readonly drawConfig: IDrawConfig;
 
-    private readonly world: IWorld;
+    private world: IWorld;
 
     constructor(config: IGameConfig) {
         this.ctx = config.context;
@@ -39,6 +39,13 @@ export default class Game implements IGame {
         }
     }
 
+    public restart(seed: CellState[][], context: CanvasRenderingContext2D): void {
+        this.stop();
+        this.ctx = context;
+        this.world = new World(seed);
+        this.start();
+    }
+
     private drawGrid() {
         const ctx = this.ctx;
         const drawConfig = this.drawConfig;
@@ -63,16 +70,13 @@ export default class Game implements IGame {
             ctx.lineTo(ctx.canvas.width, 1 + i * CELL_WIDTH);
             ctx.stroke();
         }
-
-        // Fill board with default color
-        // ctx.fillStyle = 'rgba(211, 211, 211, 0.4)';
-        // ctx.fillRect(0, 0, ctx.canvas.height, ctx.canvas.width);
     }
 }
 
 interface IGame {
     start(): void;
     stop(): void;
+    restart(seed: CellState[][], ctx: CanvasRenderingContext2D): void;
 }
 
 interface IGameConfig {

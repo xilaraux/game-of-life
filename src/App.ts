@@ -6,7 +6,7 @@ import {configureCanvas} from './utils/configureCanvas';
 const board = document.getElementById('board') as HTMLCanvasElement;
 
 const context = configureCanvas(board);
-let worldSeed = configureWorld(context.canvas);
+const worldSeed = configureWorld(context.canvas);
 
 export const game = new Game({
     context,
@@ -18,25 +18,8 @@ export const game = new Game({
     },
 });
 
-export const onResize = debounce((event: Event) => {
-    // @ts-ignore
-    const newWidth = event.target.innerWidth;
-    // @ts-ignore
-    const newHeight = event.target.innerHeight;
-
-    let increaseWidth = true;
-    let increaseHeight = true;
-
-    if (worldSeed.length >= ~~(newHeight / 20)) {
-        increaseHeight = false;
-    }
-
-    if (worldSeed[0].length >= ~~(newWidth / 20)) {
-        increaseWidth = false;
-    }
-
-    if (increaseHeight || increaseWidth) {
-        worldSeed = configureWorld({ width: newWidth, height: (newHeight / 20 - worldSeed.length) * 20 });
-        console.log(worldSeed);
-    }
+export const onResize = debounce(() => {
+    const newContext = configureCanvas(board);
+    const newSeed = configureWorld(newContext.canvas);
+    game.restart(newSeed, configureCanvas(board));
 }, 500);
